@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Form - UH Sugarland Cafeteria</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+
+        header {
+            background-color: #f8c200;
+            padding: 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+            color: #ffffff;
+        }
+
+        main {
+            padding: 20px;
+        }
+
+        #orderForm {
+            margin-bottom: 20px;
+        }
+
+        .order-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .order-item img {
+            width: 100px;
+            margin-right: 20px;
+            border-radius: 5px;
+        }
+
+        #submitOrder {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #f8c200;
+            color: #ffffff;
+            cursor: pointer;
+        }
+
+        #submitOrder:hover {
+            background-color: #f0b000;
+        }
+
+        #backToMain {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #333333;
+            text-decoration: none;
+        }
+
+        #backToMain:hover {
+            color: #000000;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Place Your Order</h1>
+        <a href="main.html" id="backToMain">Back to Main Page</a>
+    </header>
+    <main>
+        <div id="orderForm"></div>
+        <button id="submitOrder">Submit Order</button>
+    </main>
+
+    <script>
+        const menuItems = [
+            {
+                name: "Spicy Fried Chicken Combo",
+                price: 9.99,
+                description: "Crispy fried chicken coated in our signature spicy seasoning. Served with your choice of side and a drink.",
+                image: "spicycombo.png",
+                category: "spicy"
+            },
+            {
+                name: "Classic Fried Chicken Platter",
+                price: 8.99,
+                description: "Traditional fried chicken, perfectly seasoned for timeless flavor. Comes with your choice of side and a biscuit.",
+                image: "friedchicken.png",
+                category: "classic"
+            },
+            {
+                name: "Garden Salad",
+                price: 5.99,
+                description: "Fresh garden salad with mixed greens, tomatoes, cucumbers, and your choice of dressing.",
+                image: "salad.png",
+                category: "salad"
+            },
+        ];
+
+        window.onload = function() {
+            const orderForm = document.getElementById("orderForm");
+            const submitButton = document.getElementById("submitOrder");
+
+            function createOrderForm() {
+                orderForm.innerHTML = "";
+
+                menuItems.forEach(item => {
+                    const itemDiv = document.createElement("div");
+                    itemDiv.classList.add("order-item");
+
+                    const itemName = document.createElement("span");
+                    itemName.textContent = item.name;
+
+                    const itemPrice = document.createElement("span");
+                    itemPrice.textContent = `$${item.price.toFixed(2)}`;
+
+                    const quantityInput = document.createElement("input");
+                    quantityInput.type = "number";
+                    quantityInput.min = 0;
+                    quantityInput.max = 10;
+                    quantityInput.value = 0;
+
+                    const itemImage = document.createElement("img");
+                    itemImage.src = item.image;
+
+                    itemDiv.appendChild(itemName);
+                    itemDiv.appendChild(itemImage);
+                    itemDiv.appendChild(itemPrice);
+                    itemDiv.appendChild(quantityInput);
+                    orderForm.appendChild(itemDiv);
+                });
+            }
+
+            function validateOrder() {
+                const orderItems = document.querySelectorAll(".order-item input");
+                let isValid = true;
+                let errorMessage = "";
+
+                orderItems.forEach(input => {
+                    const quantity = parseInt(input.value);
+                    if (isNaN(quantity) || quantity < 0 || quantity > 10) {
+                        isValid = false;
+                        errorMessage += `Please enter a valid quantity for ${input.previousSibling.previousSibling.textContent}\n`;
+                    }
+                });
+
+                if (!isValid) {
+                    alert(errorMessage);
+                } else {
+                    let total = 0;
+                    orderItems.forEach((input, index) => {
+                        const quantity = parseInt(input.value);
+                        total += quantity * menuItems[index].price;
+                    });
+
+                    const addTip = confirm("Would you like to add a tip?");
+                    if (addTip) {
+                        const tipAmount = parseFloat(prompt("Enter the tip amount:"));
+                        if (!isNaN(tipAmount) && tipAmount >= 0) {
+                            total += tipAmount;
+                        } else {
+                            alert("Invalid tip amount. Tip not added.");
+                        }
+                    }
+
+                    const taxRate = 0.065; // 6.5% sales tax
+                    const taxAmount = total * taxRate;
+                    total += taxAmount;
+
+                    const orderNumber = Math.floor(Math.random() * 999) + 1;
+                    alert(`Your order number is: ${orderNumber.toString().padStart(3, '0')}\nTotal Order Amount (including tax): $${total.toFixed(2)}`);
+                }
+            }
+
+            createOrderForm();
+
+            submitButton.addEventListener("click", validateOrder);
+        };
+    </script>
+</body>
+</html>
